@@ -151,7 +151,6 @@ nav button.on{color:#fff}nav button.on em{transform:translateY(-2px) scale(1.2)}
 #pf{z-index:21}#sp{z-index:22}.pft{position:absolute;top:0;left:0;right:0;z-index:3;display:flex;gap:10px;align-items:center;padding:12px 14px}.pfc{flex:1;overflow-y:auto;padding-bottom:30px}.ac [data-sv]{opacity:.45}.ac [data-sv].liked{opacity:1}
 </style>
 
-<!-- إدراج مكتبات وزر ربط Firebase الجديد -->
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
   import { getFirestore, collection, addDoc, onSnapshot, query, orderBy } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
@@ -198,6 +197,181 @@ nav button.on{color:#fff}nav button.on em{transform:translateY(-2px) scale(1.2)}
 
 </head>
 <body>
-<!-- باقي محتوى التطبيق -->
+<div id="app">
+<header><button class="hb" id="th" aria-label="الإعدادات">⚙️</button><div class="logo">VLX</div><button class="hb" id="wb" style="width:auto;padding:0 12px;font-size:13px" onclick="openStore()">🪙 0</button></header>
+<main>
+<section class="page on" id="p0"><div class="stories" id="stories"></div><div id="feed"></div></section>
+<section class="page reels" id="p1"></section>
+<section class="page" id="p2"><div style="display:flex;justify-content:space-between;align-items:center"><h2>الرسائل</h2><button class="join" onclick="openGroup()">＋ مجموعة</button></div><div id="chats"></div></section>
+<section class="page" id="p3">
+<input class="search" id="sq" dir="ltr" placeholder="🔍  ابحث باليوزر @username"><div id="sres"></div>
+<div class="chips" id="trend"></div>
+<div id="comms" style="display:none"></div></section>
+<section class="page" id="p4"><div class="pcv" id="cov"></div><div class="pfb"><div class="pfh"><div class="avw"><div class="av" id="mav" onclick="openPic()"></div><b class="plus" onclick="openSc()">＋</b></div><div class="pfi"><h2 id="pn">أنت</h2><small id="pe"></small></div></div><div class="pfs"><div onclick="openList('fing')"><b id="sg">0</b><small>يتابع</small></div><div onclick="openList('fers')"><b id="sr">0</b><small>متابعون</small></div><div><b id="sl">0</b><small>إعجابات</small></div></div><div class="pfa"><button class="pfx" onclick="openEdit()">تعديل الملف</button><button class="pfx" style="flex:.4" onclick="cpU(linkU(U.u))">↗</button></div><p class="bio" id="pbio"></p><div class="ptabs" id="ptabs"><span class="on" data-k="g">▦</span><span data-k="l">❤</span><span data-k="s">🔖</span></div><div class="pg" id="grid"></div></div></section>
+</main>
+<button class="fab" id="fab" aria-label="منشور جديد">＋</button>
+<nav id="nav"><i id="ind"></i></nav>
+
+<div class="ov" id="chat"><div class="ch"><button id="back" class="hb">➜</button><div class="av" id="cav"></div><b id="cn"></b></div><div class="msgs" id="msgs"></div><div class="tray" id="tray"></div><div class="in"><button id="stb" style="background:var(--card);font-size:20px">🎨</button><input id="mi" placeholder="اكتب رسالة…"><button id="send">➤</button></div></div>
+
+<div class="sheet" id="sheet"><textarea id="ta" placeholder="شنو يدور في بالك؟"></textarea><div class="hr"><label class="join" style="cursor:pointer">🎬 فيديو<input type="file" id="vf" accept="video/*" hidden></label><label class="join" style="cursor:pointer">🖼 صورة<input type="file" id="imf" accept="image/*" hidden></label><small id="vl"></small><small id="hc" style="margin-inline-start:auto"># 0/5</small></div><button class="pub" id="pub">انشر</button></div>
+<div class="ov" id="sp"><div class="ch"><button id="spx" class="hb">➜</button><b id="spt"></b></div><div class="pb" id="spb"></div></div>
+<div class="full hide" id="ad"><div class="adt"><b>إعلان · VLX</b><b id="adt">60</b><button class="hb" id="adx" style="color:#000">✕</button></div><div class="sc" id="adb"></div><div style="width:100%"><div class="adp"><i id="adp"></i></div><button class="pub" id="adc" disabled style="margin-top:12px;opacity:.5">أكمل الإعلان لتحصل على 150 🪙</button></div></div>
+<div class="full hide" id="auth"><div class="vlx sm"><span>V</span><span>L</span><span>X</span></div>
+<div id="af"><div class="tabs"><button id="t1" class="on">دخول</button><button id="t2">حساب جديد</button></div><input class="fi" id="an" placeholder="الاسم" style="display:none"><input class="fi" id="au" placeholder="اليوزر (مثال: vlx_ali)" dir="ltr" style="display:none"><input class="fi" id="ae" type="email" placeholder="الإيميل" dir="ltr"><input class="fi" id="ap" type="password" placeholder="الباسورد" dir="ltr"><button class="pub" id="ab">دخول</button><button class="lnk" id="rc">استعادة حساب · عندي حساب سابق</button></div>
+<div id="rf" style="display:none"><h2>استعادة الحساب</h2><input class="fi" id="re" type="email" placeholder="إيميل حسابك السابق" dir="ltr"><input class="fi" id="rk" placeholder="الرمز" style="display:none"><input class="fi" id="rp" type="password" placeholder="باسورد جديد" style="display:none"><button class="pub" id="rs">إرسال الرمز</button><button class="lnk" id="rb">رجوع</button></div></div>
+<div class="full" id="splash"><i class="rg"></i><i class="rg"></i><div class="vlx"><span>V</span><span>L</span><span>X</span></div><div class="cl">كلان</div></div>
+<div class="full hide" id="sc" style="z-index:36;background:#000;color:#fff;justify-content:flex-start;align-items:stretch;padding:0;gap:0"><div class="sct"><button class="hb" id="scx">✕</button><b>قصة جديدة</b><button class="hb" id="scs">⚙️</button></div><div class="scv" id="scv"></div><div class="tools"><button id="tp">🖼</button><button id="tt">Aa</button><button id="te">😀</button><button id="tc">🎨</button></div><div class="scf"><div id="tin" style="display:none;gap:8px"><input class="fi" id="ti" placeholder="اكتب نص القصة"><button class="join" id="tia">أضف</button></div><div class="chips" id="etr" style="display:none;margin:0"></div><div class="chips" id="aud" style="margin:0"><span class="chip" data-a="all">الجميع</span><span class="chip" data-a="fol">المتابعون</span><span class="chip" data-a="close">الأصدقاء</span></div><button class="pub" id="scp">شارك قصتك</button></div><div class="sheet" id="sset"></div><input type="file" id="sf" accept="image/*,video/*" hidden></div>
+<div class="full hide" id="mv" style="z-index:37;background:#000;color:#fff;justify-content:flex-start;align-items:stretch;padding:0;gap:0"><div class="mvs"><div id="mvc" style="position:absolute;inset:0"></div><div class="mvz"><div onclick="mvgo(-1)"></div><div onclick="mvgo(1)"></div></div><div class="mvb" id="mvb"></div><div class="mvh" id="mvh"></div></div><div class="mvf" id="mvf"></div></div>
+<div class="ov" id="pf"><div class="pft"><button class="hb" id="pfb">➜</button><span style="flex:1"></span><button class="hb" id="pfs">↗</button><button class="hb" id="pfm">⋯</button></div><div class="pfc" id="pfc"></div></div>
+<div class="toast" id="toast"></div>
+</div>
+<script>(function(){try{if(localStorage.getItem("vlx_ver")!=="9"){["vlx_u","vlx_s","vlx_d","vlx_p","vlx_m","vlx_g","vlx_tr"].forEach(function(k){localStorage.removeItem(k)});try{indexedDB.deleteDatabase("vlx")}catch(e){}localStorage.setItem("vlx_ver","9")}}catch(e){}})()</script>
+<script>
+const $=s=>document.querySelector(s),G=["linear-gradient(135deg,#4e5058,#2b2d31)","linear-gradient(135deg,#5d6068,#35373c)","linear-gradient(135deg,#3f4147,#232428)","linear-gradient(135deg,#6d6f78,#3a3c42)","linear-gradient(135deg,#383a40,#1e1f22)"];
+const T=[["🏠","الرئيسية"],["🎬","فيديو"],["💬","رسائل"],["🧭","اكتشف"],["👤","حسابي"]];
+let cur=0;
+const pg=[...document.querySelectorAll(".page")];
+function toast(t){const e=$("#toast");e.textContent=t;e.classList.add("on");setTimeout(()=>e.classList.remove("on"),1800)}
+
+T.forEach((t,i)=>{const b=document.createElement("button");b.innerHTML=`<em>${t[0]}</em>${t[1]}`;b.onclick=()=>go(i);$("#nav").appendChild(b)});
+function go(i){if(i==cur)return;const d=i>cur?1:-1,o=pg[cur],n=pg[i];[o,n].forEach(e=>e.style.setProperty("--in",d));n.classList.remove("out");void n.offsetWidth;o.classList.remove("on");o.classList.add("out");n.classList.add("on");cur=i;mark();$("#fab").style.display=i==0?"":"none"}
+function mark(){const b=[...$("#nav").querySelectorAll("button")];b.forEach((x,i)=>x.classList.toggle("on",i==cur));const t=b[cur],n=$("#nav");$("#ind").style.left=t.offsetLeft+"px";$("#ind").style.width=t.offsetWidth+"px"}
+addEventListener("resize",mark);setTimeout(mark,60);document.fonts&&document.fonts.ready.then(mark);
+function openChat(){}
+$("#back").onclick=()=>$("#chat").classList.remove("on");
+$("#fab").onclick=()=>{$("#sheet").classList.toggle("on");setTimeout(()=>$("#ta").focus(),300)};
+
+function theme(t){document.documentElement.dataset.theme=t;try{localStorage.setItem("lt",t)}catch(e){}}
+$("#th").onclick=()=>theme((document.documentElement.dataset.theme||(matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light"))=="dark"?"light":"dark");
+try{const t=localStorage.getItem("lt");if(t)theme(t)}catch(e){}
+/* ===== VLX ===== */
+let DB={},U=null,mode=0;try{DB=JSON.parse(localStorage.getItem("vlx_u")||"{}")}catch(e){}
+const save=()=>{try{localStorage.setItem("vlx_u",JSON.stringify(DB))}catch(e){}},pr=()=>U.u==="itzf18"||U.prem>Date.now(),esc=s=>s.replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c])),hs=s=>{let x=5381;for(const c of s)x=(x*33)^c.charCodeAt(0);return String(x>>>0)},today=()=>new Date().toDateString(),pad=n=>String(n).padStart(2,"0");
+function setMode(m){mode=m;$("#t1").classList.toggle("on",!m);$("#t2").classList.toggle("on",!!m);$("#an").style.display=m?"":"none";$("#ab").textContent=m?"إنشاء حساب":"دخول"}
+$("#t1").onclick=()=>setMode(0);$("#t2").onclick=()=>setMode(1);
+let rst=0,rcode="";
+$("#rc").onclick=()=>{$("#af").style.display="none";$("#rf").style.display="flex"};
+$("#rb").onclick=()=>{$("#rf").style.display="none";$("#af").style.display="flex";rst=0};
+$("#rs").onclick=()=>{const e=$("#re").value.trim().toLowerCase();if(!DB[e])return toast("ما لقينا حساب بهذا الإيميل");if(!rst){rcode=String(100000+Math.floor(Math.random()*9e5));toast("رمز الاستعادة: "+rcode);$("#rk").style.display=$("#rp").style.display="";$("#rs").textContent="غيّر الباسورد";rst=1;return}
+if($("#rk").value!==rcode)return toast("الرمز غلط");if($("#rp").value.length<6)return toast("الباسورد 6 أحرف أو أكثر");DB[e].pass=hs($("#rp").value);save();toast("تم، سجّل دخول");$("#rb").click();$("#rs").textContent="إرسال الرمز";$("#rk").style.display=$("#rp").style.display="none"};
+function enter(e){U=DB[e];try{localStorage.setItem("vlx_s",e)}catch(_){}ui();$("#auth").classList.add("hide")}
+function logout(){try{localStorage.removeItem("vlx_s")}catch(e){}location.reload()}
+function ui(){$("#wb").textContent="🪙 "+U.coins+(pr()?" 💎":"");$("#pn").textContent=U.name+(pr()?" 💎":"");$("#pe").textContent=U.email;const c=$("#cov");c.style.cssText=pr()&&U.img?`background:url(${U.img}) center/cover;animation:none`:U.cover?`background:${U.cover};animation:none`:"";$("#ta").oninput()}
+setTimeout(()=>{$("#splash").classList.add("hide");let s;try{s=localStorage.getItem("vlx_s")}catch(e){}if(s&&DB[s])enter(s);else $("#auth").classList.remove("hide")},2800);
+function sp(t,h){$("#spt").textContent=t;$("#spb").innerHTML=h;$("#sp").style.setProperty("--in",-1);$("#sp").classList.add("on")}
+$("#spx").onclick=()=>$("#sp").classList.remove("on");
+
+/* المتجر والإعلانات */
+const left=()=>{if(U.day!=today()){U.day=today();U.ads=0}return 4-U.ads};
+function openStore(){const l=left();sp("المتجر",`<div class="wal"><small>رصيدك</small><b>🪙 ${U.coins}</b></div><h2>إعلانات</h2><div class="row"><div class="m"><b>شاهد إعلان VLX · 60 ثانية</b><small>+150 عملة · المتبقي اليوم ${l}/4</small></div><button class="join" ${l?"":"disabled"} onclick="playAd()">شاهد</button></div><h2>بريمو 💎</h2><div class="row"><div class="m"><b>بريمو لمدة 5 أيام</b><small>ألوان ودمج لونين · بنر صورة · ملصقات · هاشتاقات بلا حد · فيديو 60 دقيقة</small></div><button class="join" onclick="buy()">500 🪙</button></div><h2>مشترياتي</h2><div class="row"><div class="m">${pr()?`<b>💎 بريمو فعّال</b><small>ينتهي بعد <span id="cd">${U.u==OWN?"∞":""}</span></small>`:`<small>لا توجد مشتريات فعّالة</small>`}</div></div>`)}
+function buy(){if(pr())return toast("بريمو فعّال حالياً");if(U.coins<500)return toast("تحتاج "+(500-U.coins)+" عملة إضافية");U.coins-=500;U.prem=Date.now()+5*864e5;save();ui();openStore();toast("تم تفعيل بريمو 💎")}
+setInterval(()=>{if(!U)return;if(U.prem&&U.prem<=Date.now()){U.prem=0;save();ui();toast("انتهى بريمو")}const c=$("#cd");if(c&&pr()&&U.u!=OWN){const s=Math.floor((U.prem-Date.now())/1e3);c.textContent=`${Math.floor(s/86400)} يوم ${pad(Math.floor(s%86400/3600))}:${pad(Math.floor(s%3600/60))}:${pad(s%60)}`}},1000);
+const AD=[["☕","VLX Café","قهوتك بنكهة الكلان","عرض اليوم: فنجانين بسعر واحد",G[2]],["🎧","VLX Sound","اسمع الدنيا بوضوح","سماعات لأعضاء الكلان بنصف السعر",G[1]],["👟","VLX Run","اركض أبعد وسجّل رقمك","سباق الكلان الأسبوعي ينتظرك",G[3]]];
+let adt=0,adi;
+function scene(a,i){const s=[[a[0],a[1],""],[a[0],a[2],"VLX"],["🔥",a[3],"لأعضاء VLX فقط"]][i];$("#adb").style.background=a[4];$("#adb").innerHTML=`<div class="e">${s[0]}</div><h2>${s[1]}</h2><p>${s[2]}</p>`;const n=$("#adb").cloneNode(true);$("#adb").replaceWith(n)}
+$("#adx").onclick=()=>{clearInterval(adi);$("#ad").classList.add("hide");if(adt<60)toast("ما اكتمل الإعلان، ما انحسبت المكافأة")};
+$("#adc").onclick=()=>{U.coins+=150;U.ads++;save();ui();$("#ad").classList.add("hide");openStore();toast("+150 عملة 🎉")};
+
+/* الاستوديو والملصقات */
+const stk=s=>`<div class="sk" style="background:${G[s.c]}"><span>${s.e}</span><small>${esc(s.t)}</small></div>`;
+function openStudio(){if(!pr()){toast("الاستوديو لمستخدمي بريمو 💎");return openStore()}let s={e:"😎",c:0,t:""};const E=["😎","🔥","💜","😂","🚀","👑","⚡","🎉","🦁","🌙","🎮","💎"];
+const draw=()=>{$("#spb").innerHTML=`<div style="display:grid;place-items:center;margin-bottom:12px">${stk(s)}</div><div class="chips">${E.map(x=>`<span class="chip" onclick="ss.e='${x}';dr()">${x}</span>`).join("")}</div><input class="fi" id="st" maxlength="10" placeholder="نص الملصق" value="${esc(s.t)}" style="margin-bottom:10px"><div class="chips">${G.map((g,i)=>`<span class="chip" style="background:${g};width:38px;height:38px;padding:0" onclick="ss.c=${i};dr()"></span>`).join("")}</div><button class="pub" onclick="addS()">احفظ الملصق</button><h2 style="margin-top:16px">ملصقاتي (${U.stk.length})</h2><div class="chips">${U.stk.map(stk).join("")}</div>`;$("#st").oninput=e=>s.t=e.target.value};window.ss=s;window.dr=draw;window.addS=()=>{if(U.stk.length>=20)return toast("الحد 20 ملصق");U.stk.push({...s});save();draw();toast("تم الحفظ")};sp("الاستوديو","");draw()}
+$("#stb").onclick=()=>{if(!pr()){toast("الملصقات لمستخدمي بريمو 💎");return}const t=$("#tray");t.innerHTML=U.stk.length?U.stk.map((s,i)=>`<button onclick="sendS(${i})">${stk(s)}</button>`).join(""):"<small style='color:var(--mu)'>اصنع ملصقات من الاستوديو في حسابي</small>";t.classList.toggle("on")};
+function sendS(i){const m=$("#msgs");m.insertAdjacentHTML("beforeend",`<div class="b me2 stk">${stk(U.stk[i])}</div>`);m.scrollTop=1e5;$("#tray").classList.remove("on")}
+
+/* الهاشتاقات */
+const tags=s=>new Set((s.match(/#[\p{L}\p{N}_]+/gu)||[]).map(x=>x.toLowerCase())).size;let vid=null;
+$("#ta").oninput=()=>{const n=tags($("#ta").value),h=$("#hc");h.textContent=U&&pr()?`# ${n} · بلا حد 💎`:`# ${n}/5`;h.style.color=!(U&&pr())&&n>5?"var(--ac2)":""};
+
+/* ثيم الألوان */
+function applyTheme(){const a=$("#app");if(U&&pr()&&U.t1){a.style.setProperty("--tg",`linear-gradient(rgba(0,0,0,.3),rgba(0,0,0,.3)),linear-gradient(170deg,${U.t1},${U.t2||U.t1})`);a.classList.add("th")}else{a.classList.remove("th");a.style.removeProperty("--tg")}}
+const _ui=ui;ui=function(){_ui();applyTheme()};
+function openTheme(){if(!pr()){toast("ألوان الواجهة لمستخدمي بريمو 💎");return openStore()}
+const P=[["#5b3df5","#ff4f8b"],["#18c7b4","#3d8bf5"],["#ff7a45","#ff4f8b"],["#8b3df5","#18c7b4"],["#e11d48","#7c3aed"],["#0ea5e9","#22c55e"],["#f59e0b","#ef4444"],["#3b0764","#1e3a8a"]],ci="width:100%;height:54px;border:0;border-radius:16px;background:none";
+sp("ألوان الواجهة",`<h2>تدرجات جاهزة</h2><div class="chips">${P.map((p,i)=>`<span class="chip" data-i="${i}" style="width:62px;height:62px;border-radius:20px;padding:0;background:linear-gradient(135deg,${p[0]},${p[1]})"></span>`).join("")}</div><h2>دمج لونين باللي تريده</h2><div style="display:flex;gap:10px"><input type="color" id="c1" value="${U.t1||"#5b3df5"}" style="${ci}"><input type="color" id="c2" value="${U.t2||"#ff4f8b"}" style="${ci}"></div><div style="display:flex;gap:10px;margin-top:16px"><button class="join" id="t_one" style="flex:1;padding:13px">لون واحد</button><button class="join is" id="t_rst" style="flex:1;padding:13px">الأسود</button></div>`);
+const set=(a,b)=>{U.t1=a;U.t2=b;$("#c1").value=a;$("#c2").value=b;save();applyTheme()};
+document.querySelectorAll("#spb .chip").forEach(c=>c.onclick=()=>set(...P[+c.dataset.i]));
+$("#c1").oninput=$("#c2").oninput=()=>set($("#c1").value,$("#c2").value);
+$("#t_one").onclick=()=>set($("#c1").value,$("#c1").value);
+$("#t_rst").onclick=()=>{U.t1=U.t2="";save();applyTheme();toast("رجع الأسود")}}
+if(!document.documentElement.dataset.theme)document.documentElement.dataset.theme="dark";
+
+const _sm=setMode;setMode=function(m){_sm(m);$("#au").style.display=m?"":"none"};
+const okU=u=>/^[a-z0-9_.]{3,20}$/.test(u),taken=u=>{const n=norm(u);return TB.some(x=>norm(x)==n)||Object.values(DB).some(x=>x.u&&norm(x.u)==n&&(!U||x.email!==U.email))};
+$("#ab").onclick=()=>{const e=$("#ae").value.trim().toLowerCase(),p=$("#ap").value;if(!/^\S+@\S+\.\S+$/.test(e))return toast("اكتب إيميل صحيح");if(p.length<6)return toast("الباسورد 6 أحرف أو أكثر");
+if(mode){const u=$("#au").value.trim().toLowerCase().replace(/^@/,"");if(DB[e])return toast("هذا الإيميل مسجل، سجّل دخول");if(!okU(u))return toast("اليوزر: 3-20 حرف إنجليزي أو رقم أو _ .");if(taken(u))return toast("اليوزر مأخوذ، جرّب غيره");DB[e]={email:e,pass:hs(p),name:$("#an").value.trim()||u,u,coins:0,prem:0,day:"",ads:0,cover:"",img:"",stk:[],fg:[],lk:[]};save()}else if(!DB[e]||DB[e].pass!==hs(p))return toast("الإيميل أو الباسورد غلط");enter(e)};
+const fers=()=>Object.values(DB).filter(x=>x.email!==U.email&&(x.fg||[]).includes(U.u));
+const _ui2=ui;ui=function(){U.fg=U.fg||[];U.lk=U.lk||[];_ui2();$("#pe").textContent=U.u?"@"+U.u:"";$("#sg").textContent=U.fg.length;$("#sr").textContent=fers().length;$("#sl").textContent=U.lk.length;if(!U.u&&!window.aq){aq=1;openUsername()}};
+function openUsername(){sp("اليوزر",`<p style="color:var(--mu);margin-bottom:10px">الناس تلاقيك باليوزر، والإيميل يبقى خاص.</p><input class="fi" id="un" dir="ltr" maxlength="20" placeholder="username" value="${U.u||""}"><button class="pub" id="us" style="margin-top:12px">احفظ</button>`);$("#us").onclick=()=>{const u=$("#un").value.trim().toLowerCase().replace(/^@/,"");if(!okU(u))return toast("3-20 حرف إنجليزي أو رقم أو _ .");if(taken(u))return toast("اليوزر مأخوذ");const o=U.u;U.u=u;Object.values(DB).forEach(x=>{if(o&&x.fg){const i=x.fg.indexOf(o);if(i>=0)x.fg[i]=u}});save();ui();$("#sp").classList.remove("on");toast("تم حفظ @"+u)}}
+
+const SET=[["الخصوصية",[["private","حساب خاص","منشوراتك تظهر للمتابعين فقط",0],["sugg","اقتراح حسابي للآخرين","يظهر حسابك باقتراحات المتابعة",1],["find","العثور علي باليوزر","إذا طفيته ما يطلع حسابك بالبحث",1],["likesPub","إظهار سجل إعجاباتك","إذا طفيته يبقى لك وحدك",1],["fgPub","إظهار من تتابعهم","إذا طفيته تختفي قائمة يتابع عن الآخرين",1],["dm","الرسائل من الجميع","إذا طفيته يراسلك المتابعون فقط",1]]],["الإشعارات",[["nLike","الإعجابات","تنبيه عند إعجاب شخص بمنشورك",1],["nFol","متابعون جدد","تنبيه عند متابعة جديدة",1],["nMsg","الرسائل","تنبيه عند وصول رسالة",1],["nAd","عروض VLX","تنبيه بالإعلانات الجديدة",0]]],["المحتوى",[["auto","تشغيل الفيديو تلقائياً","يبدأ الفيديو لوحده بدون صوت",0],["restr","الوضع المقيّد","يحد من المحتوى الحساس",0],["save","توفير البيانات","يقلل جودة الفيديو للتحميل الأقل",0]]]];
+const GD=[["كيف أتابع شخص؟","قسم اكتشف ← اكتب اليوزر ← اضغط متابعة. تشوف الأرقام من ملفك الشخصي."],["كيف أجمع عملات؟","من المتجر (🪙 بالأعلى) شاهد إعلان 60 ثانية كامل وتأخذ 150، والحد 4 باليوم."],["كيف أشتري بريمو؟","عند 500 عملة اضغط زر الشراء بالمتجر. يدوم 5 أيام وعداده بقسم مشترياتي."],["كيف أعمل مجموعة؟","الرسائل ← ＋ مجموعة ← اختر الأعضاء (الحد 12 بما فيهم أنت)."],["كيف أرجع حسابي؟","بشاشة الدخول اضغط استعادة حساب، اكتب إيميلك وحط الرمز وباسورد جديد."],["كيف أمنع حساب؟","الإعدادات ← المحظورون ← اكتب اليوزر واضغط حظر."]];
+function openSettings(){U.st=U.st||{};const g=(k,d)=>U.st[k]===undefined?!!d:U.st[k],r=(t,s,f)=>`<button class="row" onclick="${f}"><div class="m"><b>${t}</b><small>${s}</small></div>›</button>`;
+sp("الإعدادات",`<h2>الحساب</h2>${r("الإيميل",esc(U.email)+" · لاستعادة الحساب","openAcc('email')")}${r("كلمة المرور","غيّرها بعد إدخال القديمة","openAcc('pass')")}${r("اليوزر","@"+(U.u||"")+" · للبحث عنك","openUsername()")}${r("ألوان التطبيق 💎","تدرج لونين لكل الصفحات","openTheme()")}${r("طلبات المتابعة",(U.req||[]).length+" طلب","openReq()")}${r("اللغة","العربية · English · Français · Русский","openLang()")}${U.u==OWN?r("👑 لوحة المالك","منح بريمو لأي شخص","openOwner()"):""}${r("المحظورون",(U.bl||[]).length+" حساب","openBlocked()")}${SET.map(s=>`<h2 style="margin-top:16px">${s[0]}</h2>`+s[1].map(x=>`<div class="row" data-k="${x[0]}"><div class="m"><b>${x[1]}</b><small style="white-space:normal">${x[2]}</small></div><i class="sw${g(x[0],x[3])?" on":""}"></i></div>`).join("")).join("")}<h2 style="margin-top:16px">طريقة الاستخدام</h2>${GD.map(x=>`<details class="row" style="display:block"><summary style="font-weight:600">${x[0]}</summary><small style="display:block;margin-top:8px;white-space:normal;color:var(--mu)">${x[1]}</small></details>`).join("")}<h2 style="margin-top:16px">أخرى</h2>${r("تسجيل الخروج","","logout()")}${r("حذف الحساب","نهائي، ما ينرجع","openAcc('del')")}`);
+document.querySelectorAll("#spb [data-k]").forEach(e=>e.onclick=()=>{const s=e.querySelector(".sw");s.classList.toggle("on");U.st[e.dataset.k]=s.classList.contains("on");save();ui()})}
+$("#th").onclick=openSettings;
+
+let TB=[];try{TB=JSON.parse(localStorage.getItem("vlx_d")||"[]")}catch(e){}
+const rc=()=>`hsl(${Math.random()*360|0},50%,40%)`,bgo=r=>r.pic?`url(${r.pic}) center/cover`:r.col||"#4e5058",avh=r=>`<div class="av" style="background:${bgo(r)};color:#fff;font-weight:800">${r.pic?"":"V"}</div>`,setAv=(e,r)=>{e.style.cssText=`background:${bgo(r)};color:#fff;font-weight:800`;e.textContent=r.pic?"":"V"};
+const act=o=>(o.stories||[]).filter(s=>Date.now()-s.t<864e5),vs=o=>act(o).filter(s=>s.aud=="all"||(s.aud=="fol"&&U.fg.includes(o.u))||(s.aud=="close"&&U.fg.includes(o.u)&&(o.fg||[]).includes(U.u))),ago=t=>{const m=Math.floor((Date.now()-t)/6e4);const h=Math.floor(m/60),L=LANG;return m<1?(L=="ar"?"الآن":L=="fr"?"à l’instant":L=="ru"?"сейчас":"now"):m<60?(L=="ar"?`قبل ${m} د`:L=="fr"?`il y a ${m} min`:L=="ru"?`${m} мин назад`:`${m}m ago`):(L=="ar"?`قبل ${h} س`:L=="fr"?`il y a ${h} h`:L=="ru"?`${h} ч назад`:`${h}h ago`)};
+
+/* القصص */
+const BG=["linear-gradient(135deg,#4e5058,#1e1f22)","linear-gradient(135deg,#7a0a0a,#1a0505)","linear-gradient(135deg,#1f3a5f,#0b1624)","linear-gradient(135deg,#2f5d3a,#0d1a10)","linear-gradient(135deg,#6a3d8f,#1a0f26)","linear-gradient(135deg,#b8741a,#3a1f06)"],FL=["none","grayscale(1)","sepia(.8)","contrast(1.3) saturate(1.4)","blur(2px) brightness(1.1)"],TS=["font-weight:600","font-weight:800;text-shadow:0 2px 12px #000","background:#fff;color:#111;padding:4px 12px;border-radius:10px","font-style:italic;font-weight:600;color:#ffd9d9"];
+let ST,MV={};
+
+const UA=u=>Object.values(DB).find(x=>x.u==u),MU={},MB={},CKEY={k:""},LINK_BASE="vlx://",nf="<small style='color:var(--mu)'>ما لقينا نتيجة<br>البحث حالياً يشمل حسابات هذا الجهاز فقط</small>";
+let PO=[],MS={},GR=[],OPEN=new Set(),OP=null,PF=null,UPT=null,DELQ="";
+try{PO=JSON.parse(localStorage.getItem("vlx_p")||"[]");MS=JSON.parse(localStorage.getItem("vlx_m")||"{}");GR=JSON.parse(localStorage.getItem("vlx_g")||"[]")}catch(e){}
+const savePO=()=>{try{localStorage.setItem("vlx_p",JSON.stringify(PO))}catch(e){}},saveM=()=>{try{localStorage.setItem("vlx_m",JSON.stringify(MS));localStorage.setItem("vlx_g",JSON.stringify(GR))}catch(e){}},dk=(a,b)=>[a,b].sort().join("|");
+
+/* النشر مع مزامنة Firebase */
+async function commit(){
+  const v=$("#ta").value.trim(),id="p"+Date.now().toString(36)+Math.random().toString(36).slice(2,5);
+  const postObj = {id,u:U.u,t:v,k:PF?PF.k:"txt",ts:Date.now(),lk:[],cm:[],w:PF?PF.w:0,h:PF?PF.h:0,d:PF?PF.d:0};
+  
+  if(window.publishPostToCloud) {
+    await window.publishPostToCloud(postObj);
+  }
+  
+  PO.unshift(postObj);
+  savePO();
+  PF=null;
+  $("#ta").value="";
+  $("#ta").oninput();
+  $("#vl").textContent="";
+  $("#sheet").classList.remove("on");
+  renderAll();
+  toast("تم النشر بنجاح!");
+}
+
+$("#pub").onclick=()=>{
+  const v=$("#ta").value.trim();
+  if(!v&&!PF)return toast("اكتب شي أو أضف صورة أو فيديو");
+  commit();
+};
+
+/* الاستماع للتحديثات الحية من السيرفر */
+if(window.listenToCloudPosts) {
+  window.listenToCloudPosts((cloudPosts) => {
+    if(cloudPosts && cloudPosts.length) {
+      PO = cloudPosts;
+      renderFeed();
+    }
+  });
+}
+
+function renderFeed(){
+  $("#feed").innerHTML=PO.map(p=>`<article class="card" data-p="${p.id}"><div class="ph"><div><b>@${esc(p.u||"أحد الأعضاء")}</b><small>${ago(p.ts||Date.now())}</small></div></div><div class="tx">${esc(p.t||"")}</div></article>`).join("")||"<div style='text-align:center;color:var(--mu);padding:50px 20px'>ما في منشورات بعد<br>اضغط ＋ وانشر أول منشور</div>";
+}
+
+function renderAll(){
+  if(!U)return;
+  renderFeed();
+}
+
+const OWN="itzf18",ownTag='<span class="ow">(owner)</span>';
+let LANG="ar";
+</script>
 </body>
 </html>
