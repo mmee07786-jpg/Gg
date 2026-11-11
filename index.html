@@ -148,12 +148,13 @@ nav button.on{color:#fff}nav button.on em{transform:translateY(-2px) scale(1.2)}
 .pfs{display:flex;justify-content:space-around;margin:16px 0 14px;text-align:center}.pfs>div{cursor:pointer}.pfs b{display:block;font-size:22px}.pfs small{color:var(--mu)}.pfa{display:flex;gap:10px}.pfx{flex:1;padding:12px;border-radius:99px;background:var(--card);font-weight:600}.pfx.pri{background:#a11212;color:#fff;flex:1.6}.bio{margin:14px 0;line-height:1.7;white-space:pre-wrap;text-align:start}.bio:empty{display:none}
 .ptabs{display:flex;border-bottom:1px solid var(--ln);margin:10px -16px 0}.ptabs span{flex:1;text-align:center;padding:12px;font-size:22px;opacity:.5;cursor:pointer}.ptabs .on{opacity:1;box-shadow:inset 0 -3px 0 var(--tx)}
 .pg{display:grid;grid-template-columns:repeat(3,1fr);gap:2px;margin:0 -16px}.pg>div{position:relative;overflow:hidden;background:#2b2d31;aspect-ratio:3/4;cursor:pointer;display:block}.pg img,.pg video{width:100%;height:100%;object-fit:cover;display:block}.pg .pn{position:absolute;top:6px;right:6px;background:#a11212;color:#fff;font-size:11px;padding:2px 8px;border-radius:4px;font-style:normal}.pg .vw{position:absolute;bottom:6px;right:8px;color:#fff;font-size:13px;text-shadow:0 1px 4px #000}
-#pf{z-index:21}#sp{z-index:22}.pft{position:absolute;top:0;left:0;right:0;z-index:3;display:flex;gap:10px;align-items:center;padding:12px 14px}.pfc{flex:1;overflow-y:auto;padding-bottom:30px}.ac [data-sv]{opacity:.45}.ac [data-sv].liked{opacity:1}
+#pf{z-index:21}#sp{z-index:22}.pft{position:absolute;top:0;left:0;right:0;z-index:4;display:flex;gap:10px;align-items:center;padding:12px 14px}.pfc{flex:1;overflow-y:auto;padding-bottom:30px}.ac [data-sv]{opacity:.45}.ac [data-sv].liked{opacity:1}
 </style>
 
+<!-- Firebase SDK -->
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-  import { getFirestore, collection, addDoc, onSnapshot, query, orderBy } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+  import { getFirestore, collection, addDoc, onSnapshot, query, orderBy, doc, deleteDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
   const firebaseConfig = {
     apiKey: "AIzaSyAx3fXwMsTvR2ihjl3ikVC5uVtw7ShKgXg",
@@ -172,8 +173,8 @@ nav button.on{color:#fff}nav button.on em{transform:translateY(-2px) scale(1.2)}
     const q = query(collection(db, "posts"), orderBy("ts", "desc"));
     onSnapshot(q, (snapshot) => {
       const posts = [];
-      snapshot.forEach((doc) => {
-        posts.push({ id: doc.id, ...doc.data() });
+      snapshot.forEach((docSnap) => {
+        posts.push({ id: docSnap.id, ...docSnap.data() });
       });
       callback(posts);
     });
@@ -182,15 +183,33 @@ nav button.on{color:#fff}nav button.on em{transform:translateY(-2px) scale(1.2)}
   window.publishPostToCloud = async function(postData) {
     try {
       await addDoc(collection(db, "posts"), {
-        u: postData.u,
-        t: postData.t,
-        k: postData.k,
+        u: postData.u || "أنت",
+        t: postData.t || "",
+        k: postData.k || "txt",
         ts: Date.now(),
         lk: [],
-        cm: []
+        cm: [],
+        pin: 0,
+        vw: 0
       });
     } catch (e) {
       console.error("خطأ بالنشر: ", e);
+    }
+  };
+
+  window.deletePostFromCloud = async function(docId) {
+    try {
+      await deleteDoc(doc(db, "posts", docId));
+    } catch (e) {
+      console.error("خطأ بالحذف: ", e);
+    }
+  };
+
+  window.updatePostInCloud = async function(docId, data) {
+    try {
+      await updateDoc(doc(db, "posts", docId), data);
+    } catch (e) {
+      console.error("خطأ بالتحديث: ", e);
     }
   };
 </script>
@@ -247,9 +266,11 @@ $("#th").onclick=()=>theme((document.documentElement.dataset.theme||(matchMedia(
 try{const t=localStorage.getItem("lt");if(t)theme(t)}catch(e){}
 /* ===== VLX ===== */
 let DB={},U=null,mode=0;try{DB=JSON.parse(localStorage.getItem("vlx_u")||"{}")}catch(e){}
-const save=()=>{try{localStorage.setItem("vlx_u",JSON.stringify(DB))}catch(e){}},pr=()=>U.u==="itzf18"||U.prem>Date.now(),esc=s=>s.replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c])),hs=s=>{let x=5381;for(const c of s)x=(x*33)^c.charCodeAt(0);return String(x>>>0)},today=()=>new Date().toDateString(),pad=n=>String(n).padStart(2,"0");
+const save=()=>{try{localStorage.setItem("vlx_u",JSON.stringify(DB))}catch(e){}},pr=()=>U.u==="itzf18"||U.prem>Date.now(),esc=s=>String(s||"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c])),hs=s=>{let x=5381;for(const c of s)x=(x*33)^c.charCodeAt(0);return String(x>>>0)},today=()=>new Date().toDateString(),pad=n=>String(n).padStart(2,"0");
 function setMode(m){mode=m;$("#t1").classList.toggle("on",!m);$("#t2").classList.toggle("on",!!m);$("#an").style.display=m?"":"none";$("#ab").textContent=m?"إنشاء حساب":"دخول"}
 $("#t1").onclick=()=>setMode(0);$("#t2").onclick=()=>setMode(1);
+$("#ab").onclick=()=>{const e=$("#ae").value.trim().toLowerCase(),p=$("#ap").value;if(!/^\S+@\S+\.\S+$/.test(e))return toast("اكتب إيميل صحيح");if(p.length<6)return toast("الباسورد 6 أحرف أو أكثر");
+if(mode){if(DB[e])return toast("هذا الإيميل مسجل، سجّل دخول");DB[e]={email:e,pass:hs(p),name:$("#an").value.trim()||e.split("@")[0],coins:0,prem:0,day:"",ads:0,cover:"",img:"",stk:[]};save()}else if(!DB[e]||DB[e].pass!==hs(p))return toast("الإيميل أو الباسورد غلط");enter(e)};
 let rst=0,rcode="";
 $("#rc").onclick=()=>{$("#af").style.display="none";$("#rf").style.display="flex"};
 $("#rb").onclick=()=>{$("#rf").style.display="none";$("#af").style.display="flex";rst=0};
@@ -257,19 +278,20 @@ $("#rs").onclick=()=>{const e=$("#re").value.trim().toLowerCase();if(!DB[e])retu
 if($("#rk").value!==rcode)return toast("الرمز غلط");if($("#rp").value.length<6)return toast("الباسورد 6 أحرف أو أكثر");DB[e].pass=hs($("#rp").value);save();toast("تم، سجّل دخول");$("#rb").click();$("#rs").textContent="إرسال الرمز";$("#rk").style.display=$("#rp").style.display="none"};
 function enter(e){U=DB[e];try{localStorage.setItem("vlx_s",e)}catch(_){}ui();$("#auth").classList.add("hide")}
 function logout(){try{localStorage.removeItem("vlx_s")}catch(e){}location.reload()}
-function ui(){$("#wb").textContent="🪙 "+U.coins+(pr()?" 💎":"");$("#pn").textContent=U.name+(pr()?" 💎":"");$("#pe").textContent=U.email;const c=$("#cov");c.style.cssText=pr()&&U.img?`background:url(${U.img}) center/cover;animation:none`:U.cover?`background:${U.cover};animation:none`:"";$("#ta").oninput()}
+function ui(){$("#wb").textContent="🪙 "+(U?U.coins:0)+(pr()?" 💎":"");$("#pn").textContent=(U?U.name:"أنت")+(pr()?" 💎":"");$("#pe").textContent=U?U.email:"";const c=$("#cov");if(U)c.style.cssText=pr()&&U.img?`background:url(${U.img}) center/cover;animation:none`:U.cover?`background:${U.cover};animation:none`:"";$("#ta").oninput()}
 setTimeout(()=>{$("#splash").classList.add("hide");let s;try{s=localStorage.getItem("vlx_s")}catch(e){}if(s&&DB[s])enter(s);else $("#auth").classList.remove("hide")},2800);
 function sp(t,h){$("#spt").textContent=t;$("#spb").innerHTML=h;$("#sp").style.setProperty("--in",-1);$("#sp").classList.add("on")}
 $("#spx").onclick=()=>$("#sp").classList.remove("on");
 
 /* المتجر والإعلانات */
-const left=()=>{if(U.day!=today()){U.day=today();U.ads=0}return 4-U.ads};
+const left=()=>{if(!U)return 4;if(U.day!=today()){U.day=today();U.ads=0}return 4-U.ads};
 function openStore(){const l=left();sp("المتجر",`<div class="wal"><small>رصيدك</small><b>🪙 ${U.coins}</b></div><h2>إعلانات</h2><div class="row"><div class="m"><b>شاهد إعلان VLX · 60 ثانية</b><small>+150 عملة · المتبقي اليوم ${l}/4</small></div><button class="join" ${l?"":"disabled"} onclick="playAd()">شاهد</button></div><h2>بريمو 💎</h2><div class="row"><div class="m"><b>بريمو لمدة 5 أيام</b><small>ألوان ودمج لونين · بنر صورة · ملصقات · هاشتاقات بلا حد · فيديو 60 دقيقة</small></div><button class="join" onclick="buy()">500 🪙</button></div><h2>مشترياتي</h2><div class="row"><div class="m">${pr()?`<b>💎 بريمو فعّال</b><small>ينتهي بعد <span id="cd">${U.u==OWN?"∞":""}</span></small>`:`<small>لا توجد مشتريات فعّالة</small>`}</div></div>`)}
 function buy(){if(pr())return toast("بريمو فعّال حالياً");if(U.coins<500)return toast("تحتاج "+(500-U.coins)+" عملة إضافية");U.coins-=500;U.prem=Date.now()+5*864e5;save();ui();openStore();toast("تم تفعيل بريمو 💎")}
 setInterval(()=>{if(!U)return;if(U.prem&&U.prem<=Date.now()){U.prem=0;save();ui();toast("انتهى بريمو")}const c=$("#cd");if(c&&pr()&&U.u!=OWN){const s=Math.floor((U.prem-Date.now())/1e3);c.textContent=`${Math.floor(s/86400)} يوم ${pad(Math.floor(s%86400/3600))}:${pad(Math.floor(s%3600/60))}:${pad(s%60)}`}},1000);
 const AD=[["☕","VLX Café","قهوتك بنكهة الكلان","عرض اليوم: فنجانين بسعر واحد",G[2]],["🎧","VLX Sound","اسمع الدنيا بوضوح","سماعات لأعضاء الكلان بنصف السعر",G[1]],["👟","VLX Run","اركض أبعد وسجّل رقمك","سباق الكلان الأسبوعي ينتظرك",G[3]]];
 let adt=0,adi;
 function scene(a,i){const s=[[a[0],a[1],""],[a[0],a[2],"VLX"],["🔥",a[3],"لأعضاء VLX فقط"]][i];$("#adb").style.background=a[4];$("#adb").innerHTML=`<div class="e">${s[0]}</div><h2>${s[1]}</h2><p>${s[2]}</p>`;const n=$("#adb").cloneNode(true);$("#adb").replaceWith(n)}
+function playAd(){if(left()<1)return;const a=AD[U.ads%3];adt=0;$("#ad").classList.remove("hide");$("#adc").disabled=true;$("#adc").style.opacity=.5;$("#adp").style.width="0";$("#adt").textContent=60;scene(a,0);clearInterval(adi);adi=setInterval(()=>{adt++;$("#adt").textContent=60-adt;$("#adp").style.width=adt/60*100+"%";if(adt==20)scene(a,1);if(adt==40)scene(a,2);if(adt>=60){clearInterval(adi);$("#adc").disabled=false;$("#adc").style.opacity=1}},1000)}
 $("#adx").onclick=()=>{clearInterval(adi);$("#ad").classList.add("hide");if(adt<60)toast("ما اكتمل الإعلان، ما انحسبت المكافأة")};
 $("#adc").onclick=()=>{U.coins+=150;U.ads++;save();ui();$("#ad").classList.add("hide");openStore();toast("+150 عملة 🎉")};
 
@@ -298,11 +320,9 @@ $("#t_rst").onclick=()=>{U.t1=U.t2="";save();applyTheme();toast("رجع الأس
 if(!document.documentElement.dataset.theme)document.documentElement.dataset.theme="dark";
 
 const _sm=setMode;setMode=function(m){_sm(m);$("#au").style.display=m?"":"none"};
-const okU=u=>/^[a-z0-9_.]{3,20}$/.test(u),taken=u=>{const n=norm(u);return TB.some(x=>norm(x)==n)||Object.values(DB).some(x=>x.u&&norm(x.u)==n&&(!U||x.email!==U.email))};
-$("#ab").onclick=()=>{const e=$("#ae").value.trim().toLowerCase(),p=$("#ap").value;if(!/^\S+@\S+\.\S+$/.test(e))return toast("اكتب إيميل صحيح");if(p.length<6)return toast("الباسورد 6 أحرف أو أكثر");
-if(mode){const u=$("#au").value.trim().toLowerCase().replace(/^@/,"");if(DB[e])return toast("هذا الإيميل مسجل، سجّل دخول");if(!okU(u))return toast("اليوزر: 3-20 حرف إنجليزي أو رقم أو _ .");if(taken(u))return toast("اليوزر مأخوذ، جرّب غيره");DB[e]={email:e,pass:hs(p),name:$("#an").value.trim()||u,u,coins:0,prem:0,day:"",ads:0,cover:"",img:"",stk:[],fg:[],lk:[]};save()}else if(!DB[e]||DB[e].pass!==hs(p))return toast("الإيميل أو الباسورد غلط");enter(e)};
-const fers=()=>Object.values(DB).filter(x=>x.email!==U.email&&(x.fg||[]).includes(U.u));
-const _ui2=ui;ui=function(){U.fg=U.fg||[];U.lk=U.lk||[];_ui2();$("#pe").textContent=U.u?"@"+U.u:"";$("#sg").textContent=U.fg.length;$("#sr").textContent=fers().length;$("#sl").textContent=U.lk.length;if(!U.u&&!window.aq){aq=1;openUsername()}};
+const okU=u=>/^[a-z0-9_.]{3,20}$/.test(u),norm=u=>String(u).toLowerCase().replace(/[._]/g,""),taken=u=>{const n=norm(u);return TB.some(x=>norm(x)==n)||Object.values(DB).some(x=>x.u&&norm(x.u)==n&&(!U||x.email!==U.email))};
+const fers=()=>Object.values(DB).filter(x=>U&&x.email!==U.email&&(x.fg||[]).includes(U.u));
+const _ui2=ui;ui=function(){if(!U)return;U.fg=U.fg||[];U.lk=U.lk||[];_ui2();$("#pe").textContent=U.u?"@"+U.u:"";$("#sg").textContent=U.fg.length;$("#sr").textContent=fers().length;$("#sl").textContent=U.lk.length;if(!U.u&&!window.aq){aq=1;openUsername()}};
 function openUsername(){sp("اليوزر",`<p style="color:var(--mu);margin-bottom:10px">الناس تلاقيك باليوزر، والإيميل يبقى خاص.</p><input class="fi" id="un" dir="ltr" maxlength="20" placeholder="username" value="${U.u||""}"><button class="pub" id="us" style="margin-top:12px">احفظ</button>`);$("#us").onclick=()=>{const u=$("#un").value.trim().toLowerCase().replace(/^@/,"");if(!okU(u))return toast("3-20 حرف إنجليزي أو رقم أو _ .");if(taken(u))return toast("اليوزر مأخوذ");const o=U.u;U.u=u;Object.values(DB).forEach(x=>{if(o&&x.fg){const i=x.fg.indexOf(o);if(i>=0)x.fg[i]=u}});save();ui();$("#sp").classList.remove("on");toast("تم حفظ @"+u)}}
 
 const SET=[["الخصوصية",[["private","حساب خاص","منشوراتك تظهر للمتابعين فقط",0],["sugg","اقتراح حسابي للآخرين","يظهر حسابك باقتراحات المتابعة",1],["find","العثور علي باليوزر","إذا طفيته ما يطلع حسابك بالبحث",1],["likesPub","إظهار سجل إعجاباتك","إذا طفيته يبقى لك وحدك",1],["fgPub","إظهار من تتابعهم","إذا طفيته تختفي قائمة يتابع عن الآخرين",1],["dm","الرسائل من الجميع","إذا طفيته يراسلك المتابعون فقط",1]]],["الإشعارات",[["nLike","الإعجابات","تنبيه عند إعجاب شخص بمنشورك",1],["nFol","متابعون جدد","تنبيه عند متابعة جديدة",1],["nMsg","الرسائل","تنبيه عند وصول رسالة",1],["nAd","عروض VLX","تنبيه بالإعلانات الجديدة",0]]],["المحتوى",[["auto","تشغيل الفيديو تلقائياً","يبدأ الفيديو لوحده بدون صوت",0],["restr","الوضع المقيّد","يحد من المحتوى الحساس",0],["save","توفير البيانات","يقلل جودة الفيديو للتحميل الأقل",0]]]];
@@ -325,10 +345,11 @@ let PO=[],MS={},GR=[],OPEN=new Set(),OP=null,PF=null,UPT=null,DELQ="";
 try{PO=JSON.parse(localStorage.getItem("vlx_p")||"[]");MS=JSON.parse(localStorage.getItem("vlx_m")||"{}");GR=JSON.parse(localStorage.getItem("vlx_g")||"[]")}catch(e){}
 const savePO=()=>{try{localStorage.setItem("vlx_p",JSON.stringify(PO))}catch(e){}},saveM=()=>{try{localStorage.setItem("vlx_m",JSON.stringify(MS));localStorage.setItem("vlx_g",JSON.stringify(GR))}catch(e){}},dk=(a,b)=>[a,b].sort().join("|");
 
-/* النشر مع مزامنة Firebase */
+/* النشر مع السيرفر */
 async function commit(){
-  const v=$("#ta").value.trim(),id="p"+Date.now().toString(36)+Math.random().toString(36).slice(2,5);
-  const postObj = {id,u:U.u,t:v,k:PF?PF.k:"txt",ts:Date.now(),lk:[],cm:[],w:PF?PF.w:0,h:PF?PF.h:0,d:PF?PF.d:0};
+  const v=$("#ta").value.trim();
+  const id="p"+Date.now().toString(36)+Math.random().toString(36).slice(2,5);
+  const postObj = {id, u: (U?U.u:"أنت"), t: v, k: "txt", ts: Date.now(), lk: [], cm: [], pin: 0};
   
   if(window.publishPostToCloud) {
     await window.publishPostToCloud(postObj);
@@ -336,10 +357,8 @@ async function commit(){
   
   PO.unshift(postObj);
   savePO();
-  PF=null;
   $("#ta").value="";
   $("#ta").oninput();
-  $("#vl").textContent="";
   $("#sheet").classList.remove("on");
   renderAll();
   toast("تم النشر بنجاح!");
@@ -347,27 +366,188 @@ async function commit(){
 
 $("#pub").onclick=()=>{
   const v=$("#ta").value.trim();
-  if(!v&&!PF)return toast("اكتب شي أو أضف صورة أو فيديو");
+  if(!v) return toast("اكتب شيء حتى تنشر");
   commit();
 };
 
-/* الاستماع للتحديثات الحية من السيرفر */
+/* الاستماع للتحديثات المباشرة من Firebase */
 if(window.listenToCloudPosts) {
   window.listenToCloudPosts((cloudPosts) => {
     if(cloudPosts && cloudPosts.length) {
       PO = cloudPosts;
-      renderFeed();
+      renderAll();
     }
   });
 }
 
-function renderFeed(){
-  $("#feed").innerHTML=PO.map(p=>`<article class="card" data-p="${p.id}"><div class="ph"><div><b>@${esc(p.u||"أحد الأعضاء")}</b><small>${ago(p.ts||Date.now())}</small></div></div><div class="tx">${esc(p.t||"")}</div></article>`).join("")||"<div style='text-align:center;color:var(--mu);padding:50px 20px'>ما في منشورات بعد<br>اضغط ＋ وانشر أول منشور</div>";
+/* بطاقات المنشورات الكاملة والتفاعلية */
+const fmt=t=>esc(t).replace(/#([\p{L}\p{N}_]+)/gu,"<span class=\"tg\" onclick=\"tagS('$1')\">#$1</span>");
+
+function pcard(p, full) {
+  const userAcc = UA(p.u) || { name: p.u || "عضو VLX", col: "#4e5058" };
+  const isMe = U && p.u === U.u;
+  const isLiked = U && p.lk && p.lk.includes(U.u);
+  
+  return `
+  <article class="card" data-p="${p.id}">
+    <div class="ph">
+      <div onclick="openProf('${p.u}')" style="display:flex;gap:10px;align-items:center;flex:1">
+        ${avh(userAcc)}
+        <div>
+          <b>${esc(userAcc.name)}${p.u===OWN?ownTag:""}</b>
+          <small style="display:block"><bdi>@${esc(p.u||"user")}</bdi> · ${ago(p.ts || Date.now())}</small>
+        </div>
+      </div>
+      ${isMe ? `<button class="hb" style="width:auto;padding:0 10px;font-size:13px" onclick="pinP('${p.id}')">${p.pin ? "📌✓" : "📌"}</button>` : ""}
+      ${(isMe || (U && U.u === OWN)) ? `<button class="hb" style="width:auto;padding:0 12px;font-size:12px" onclick="delP('${p.id}')">${isMe ? "🗑" : "🛡 حذف"}</button>` : ""}
+    </div>
+    
+    ${p.t ? `<div class="tx">${fmt(p.t)}</div>` : ""}
+    
+    <div class="ac">
+      <button data-lk="${p.id}" class="${isLiked ? "liked" : ""}" onclick="lkp('${p.id}')">
+        <span>${isLiked ? "❤️" : "🤍"}</span>
+        <i style="font-style:normal">${(p.lk || []).length}</i>
+      </button>
+      <button onclick="cmt('${p.id}')">
+        <span>💬</span>
+        <i style="font-style:normal" data-cc="${p.id}">${(p.cm || []).length}</i>
+      </button>
+      <button onclick="cpL('${p.id}')">🔗</button>
+    </div>
+    
+    <div data-cm="${p.id}">
+      ${full || OPEN.has(p.id) ? cmh(p) : ""}
+    </div>
+  </article>`;
 }
 
-function renderAll(){
-  if(!U)return;
+function cmh(p) {
+  return `<div style="padding:0 14px 12px">
+    ${(p.cm || []).map(c => `
+      <div style="padding:6px 0;font-size:14px">
+        <b><bdi>@${esc(c.u)}</bdi></b> ${esc(c.t)} 
+        <small style="color:var(--mu)">${ago(c.ts)}</small>
+        ${(U && (c.u === U.u || p.u === U.u || U.u === OWN)) ? ` <button onclick="dc('${p.id}',${c.ts})" style="color:var(--mu);font-size:12px">✕</button>` : ""}
+      </div>
+    `).join("")}
+    <div style="display:flex;gap:8px;margin-top:6px">
+      <input class="fi" placeholder="اكتب تعليقاً…" style="padding:10px 14px;border-radius:99px" onkeydown="if(event.key=='Enter')addC('${p.id}',this)">
+      <button class="join" onclick="addC('${p.id}',this)">➤</button>
+    </div>
+  </div>`;
+}
+
+/* الإعجاب بالم المنشورات وتحديث Firebase */
+function lkp(id) {
+  if(!U) return toast("سجل دخول أولاً");
+  const p = PO.find(x => x.id === id);
+  if (!p) return;
+  p.lk = p.lk || [];
+  const i = p.lk.indexOf(U.u);
+  if (i < 0) p.lk.push(U.u);
+  else p.lk.splice(i, 1);
+  
+  if(window.updatePostInCloud) {
+    window.updatePostInCloud(id, { lk: p.lk });
+  }
+  savePO();
+  renderAll();
+}
+
+/* التعليقات */
+function cmt(id) {
+  if (OPEN.has(id)) OPEN.delete(id);
+  else OPEN.add(id);
+  document.querySelectorAll(`[data-cm="${id}"]`).forEach(e => {
+    const p = PO.find(x => x.id === id);
+    if(p) e.innerHTML = OPEN.has(id) ? cmh(p) : "";
+  });
+}
+
+function addC(id, el) {
+  if(!U) return toast("سجل دخول لتعلق");
+  const p = PO.find(x => x.id === id);
+  const inputEl = el.closest("[data-cm]").querySelector("input");
+  const v = inputEl.value.trim();
+  if (!v) return;
+  p.cm = p.cm || [];
+  p.cm.push({ u: U.u, t: v, ts: Date.now() });
+  
+  if(window.updatePostInCloud) {
+    window.updatePostInCloud(id, { cm: p.cm });
+  }
+  savePO();
+  OPEN.add(id);
+  renderAll();
+}
+
+function dc(id, ts) {
+  const p = PO.find(x => x.id === id);
+  if (!p) return;
+  p.cm = (p.cm || []).filter(c => c.ts !== ts);
+  if(window.updatePostInCloud) {
+    window.updatePostInCloud(id, { cm: p.cm });
+  }
+  savePO();
+  renderAll();
+}
+
+/* حذف المنشور */
+function delP(id) {
+  if (DELQ !== id) {
+    DELQ = id;
+    setTimeout(() => DELQ = "", 3000);
+    return toast("اضغط حذف مرة ثانية للتأكيد");
+  }
+  if(window.deletePostFromCloud) {
+    window.deletePostFromCloud(id);
+  }
+  PO = PO.filter(x => x.id !== id);
+  savePO();
+  renderAll();
+  toast("تم الحذف بنجاح");
+}
+
+/* تثبيت المنشور */
+function pinP(id) {
+  const p = PO.find(x => x.id === id);
+  if (!p) return;
+  p.pin = p.pin ? 0 : Date.now();
+  if(window.updatePostInCloud) {
+    window.updatePostInCloud(id, { pin: p.pin });
+  }
+  savePO();
+  renderAll();
+  toast(p.pin ? "تم تثبيت المنشور 📌" : "تم إلغاء التثبيت");
+}
+
+function cpL(id) {
+  const l = "vlx://p/" + id;
+  try {
+    navigator.clipboard.writeText(l).then(() => toast("تم نسخ رابط المنشور"));
+  } catch(e) {
+    toast("الرابط: " + l);
+  }
+}
+
+function renderFeed() {
+  $("#feed").innerHTML = PO.map(p => pcard(p)).join("") || "<div style='text-align:center;color:var(--mu);padding:50px 20px'>ما في منشورات بعد<br>اضغط ＋ وانشر أول منشور</div>";
+}
+
+function renderGrid() {
+  if(!U) return;
+  const myPosts = PO.filter(p => p.u === U.u);
+  $("#grid").innerHTML = myPosts.map(p => `
+    <div onclick="openPost('${p.id}')" style="background:var(--card);padding:10px;border-radius:12px;overflow:hidden">
+      <small>${esc(p.t.slice(0, 50))}</small>
+    </div>
+  `).join("") || "<small style='grid-column:1/-1;text-align:center;color:var(--mu);padding:20px'>منشوراتك تظهر هنا</small>";
+}
+
+function renderAll() {
   renderFeed();
+  renderGrid();
 }
 
 const OWN="itzf18",ownTag='<span class="ow">(owner)</span>';
